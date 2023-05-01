@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.17/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.6/dist/full.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-blue-200 min-h-screen">
+    <div class="container mx-auto px-4 py-10">
+        <h1 class="text-4xl font-bold mb-6 text-center">Weather App</h1>
+        <div class="flex justify-center mb-6">
+            <input type="text" id="search" placeholder="Enter city name" class="w-full max-w-md bg-white border border-gray-300 rounded py-2 px-4">
+            <button id="searchBtn" class="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Search</button>
+        </div>
+        <div id="weather" class="text-center mb-6"></div>
+        <div id="forecast-box" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 text-white border border-black"></div>
+    </div>
+    <script src="/assets/js/script.js"></script>
+</body>
+</html>
