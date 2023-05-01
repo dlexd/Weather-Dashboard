@@ -3,8 +3,11 @@ const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("search");
 const weatherDiv = document.getElementById("weather");
 const forecastDiv = document.getElementById("forecast-box");
+const searchHistoryDiv = document.getElementById("searchHistory");
 
-// Load last searched city weather and forecast on page load
+let searchHistory = JSON.parse(localStorage.getItem("searchHistory")) || [];
+
+// Loads last city from local storage
 document.addEventListener("DOMContentLoaded", async () => {
     const lastCity = localStorage.getItem("lastCity");
     if (lastCity) {
@@ -13,8 +16,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         const forecastData = await fetchForecastData(lastCity);
         displayForecast(forecastData);
     }
+    displaySearchHistory();
 });
 
+// Event listener to fetch weather data when search is clicked
 searchBtn.addEventListener("click", async () => {
     const city = searchInput.value.trim();
     if (city) {
@@ -22,11 +27,50 @@ searchBtn.addEventListener("click", async () => {
         displayWeather(weatherData);
         const forecastData = await fetchForecastData(city);
         displayForecast(forecastData);
-        // Save the city to local storage
         localStorage.setItem("lastCity", city);
+        addCityToSearchHistory(city);
     }
 });
 
+function addCityToSearchHistory(city) {
+    // Checks to see if the city is already in the history
+    const cityIndex = searchHistory.indexOf(city);
+    if (cityIndex !== -1) {
+        searchHistory.splice(cityIndex, 1);
+    }
+    
+    // Adds city to end of array
+    searchHistory.push(city);
+    
+    // Check for search history length so it's not overfilled
+    if (searchHistory.length > 5) {
+        searchHistory.shift();
+    }
+    
+    // Save the updated search history to local storage
+    localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+    
+    // Display the updated search history
+    displaySearchHistory();
+}
+
+// Function to display search history
+function displaySearchHistory() {
+    searchHistoryDiv.innerHTML = '';
+    searchHistory.forEach(city => {
+        const btn = document.createElement('button');
+        btn.textContent = city;
+        btn.classList.add('bg-blue-500', 'hover:bg-blue-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'm-2');
+        btn.addEventListener('click', async () => {
+            const weatherData = await fetchWeatherData(city);
+            displayWeather(weatherData);
+            const forecastData = await fetchForecastData(city);
+            displayForecast(forecastData);
+        });
+        searchHistoryDiv.appendChild(btn);
+    });
+}
+// Fetches weather data from API
 async function fetchWeatherData(city) {
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
     const response = await fetch(url);
@@ -56,6 +100,7 @@ function displayWeather(data) {
     weatherDiv.innerHTML = weatherHtml;
 }
 
+// Displays 5 day weather forecast
 function displayForecast(data) {
     if (data.cod === "404") {
         forecastDiv.innerHTML = "";
